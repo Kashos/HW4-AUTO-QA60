@@ -16,7 +16,7 @@ public class CardOrderTest {
         form.$("[data-test-id=city] input").setValue("Уф");
         $(By.className("menu-item")).click();
         form.$("[data-test-id=date]").click();
-        $(by("data-day", "1688922000000")).click();
+        $(by("class", "calendar__day calendar__day_state_current")).click();
         form.$("[data-test-id=name] input").setValue("Иванов Иван");
         form.$("[data-test-id=phone] input").setValue("+79000000000");
         form.$("[data-test-id=agreement]").click();
