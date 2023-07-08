@@ -1,6 +1,7 @@
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.selector.ByText;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
@@ -36,12 +38,12 @@ public class CardOrderTest {
         form.$("[data-test-id=agreement]").click();
         form.$(By.className("button")).click();
         $(".notification__content")
-                .shouldHave(Condition.text("Встреча успешно забронирована на " + planningDate), Duration.ofSeconds(20))
+                .shouldHave(text("Встреча успешно забронирована на " + planningDate), Duration.ofSeconds(20))
                 .shouldBe(Condition.visible);
     }
 
     public String generateNewDate(int days) {
-        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd"));
+        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("d"));
     }
 
     String newPlanningDate = generateNewDate(7);
@@ -50,19 +52,16 @@ public class CardOrderTest {
     void shouldTestCardOrderTask2() {
         open("http://localhost:9999/");
         SelenideElement form = $(By.className("form"));
-        form.$("[data-test-id=city] input").setValue("Уф");
-        $(By.className("menu-item"));
-        $(byText("Уфа")).click();
+        form.$("[data-test-id=city] input").setValue("Но");
+        $$(By.className("menu-item__control")).findBy(text("Новосибирск")).click();
         form.$("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        form.$("[data-test-id=date]").click();
-        $(By.className("data-day"));
-        $(byText(newPlanningDate)).click();
+        $$(By.className("calendar__day")).findBy(text(newPlanningDate)).click();
         form.$("[data-test-id=name] input").setValue("Иванов Иван");
         form.$("[data-test-id=phone] input").setValue("+79000000000");
         form.$("[data-test-id=agreement]").click();
         form.$(By.className("button")).click();
         $(".notification__content")
-                .shouldHave(Condition.text("Встреча успешно забронирована на " + newPlanningDate), Duration.ofSeconds(20))
+                .shouldHave(text("Встреча успешно забронирована на " + newPlanningDate), Duration.ofSeconds(20))
                 .shouldBe(Condition.visible);
     }
 }
