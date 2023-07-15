@@ -13,8 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
@@ -45,8 +44,11 @@ public class CardOrderTest {
     public String generateNewDate(int days) {
         return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("d"));
     }
+    int plusDays = 17;
 
-    String newPlanningDate = generateNewDate(7);
+    String currentPlanningDate = generateDate(plusDays);
+    int newPlanningDate = Integer.parseInt(generateNewDate(plusDays));
+    int currentDate = Integer.parseInt(generateNewDate(0));
 
     @Test
     void shouldTestCardOrderTask2() {
@@ -55,13 +57,20 @@ public class CardOrderTest {
         form.$("[data-test-id=city] input").setValue("Но");
         $$(By.className("menu-item__control")).findBy(text("Новосибирск")).click();
         form.$("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        $$(By.className("calendar__day")).findBy(text(newPlanningDate)).click();
+        String newCurrentDate;
+        if (newPlanningDate < currentDate) {
+            $("[data-step=\"1\"]").click();
+            newCurrentDate = Integer.toString(newPlanningDate);
+        } else {
+            newCurrentDate = Integer.toString(newPlanningDate);
+        }
+            $$(By.className("calendar__day")).findBy(text(newCurrentDate)).click();
         form.$("[data-test-id=name] input").setValue("Иванов Иван");
         form.$("[data-test-id=phone] input").setValue("+79000000000");
         form.$("[data-test-id=agreement]").click();
         form.$(By.className("button")).click();
         $(".notification__content")
-                .shouldHave(text("Встреча успешно забронирована на " + newPlanningDate), Duration.ofSeconds(20))
+                .shouldHave(text("Встреча успешно забронирована на " + currentPlanningDate), Duration.ofSeconds(20))
                 .shouldBe(Condition.visible);
     }
 }
